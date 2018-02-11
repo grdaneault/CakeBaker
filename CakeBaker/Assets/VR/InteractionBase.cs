@@ -12,7 +12,7 @@ public class InteractionBase : MonoBehaviour {
 
     public Material HighlightMaterial;
 
-    private List<HandController> controllingHands;
+    private List<HandController> controllingHands = new List<HandController>(2);
 
     // Use this for initialization
     void Start () {
@@ -36,25 +36,31 @@ public class InteractionBase : MonoBehaviour {
 		
 	}
 
-    public void Capture(HandController hand)
+    public void HoverEnter(HandController hand)
     {
         if (!controllingHands.Contains(hand))
         {
+            if (controllingHands.Count == 0)
+            {
+                Highlight();
+            }
             controllingHands.Add(hand);
-            Highlight();
         }
         else
         {
-            Debug.LogError("Already control this hand!");
+            Debug.LogError("Already controlled by this hand!");
         }
     }
 
-    public void Release(HandController hand)
+    public void HoverExit(HandController hand)
     {
         if (controllingHands.Contains(hand))
         {
             controllingHands.Remove(hand);
-            UnHighlight();
+            if (controllingHands.Count == 0)
+            {
+                UnHighlight();
+            }
         }
         else
         {
@@ -62,7 +68,7 @@ public class InteractionBase : MonoBehaviour {
         }
     }
 
-    public void Highlight()
+    private void Highlight()
     {
         if (_renderer != null)
         {
@@ -71,7 +77,7 @@ public class InteractionBase : MonoBehaviour {
         }
     }
 
-    public void UnHighlight()
+    private void UnHighlight()
     {
         if (_renderer != null)
         {
@@ -82,6 +88,25 @@ public class InteractionBase : MonoBehaviour {
 
     public void OnTriggerDown(HandController hand)
     {
-        
+        if (controllingHands.Contains(hand))
+        {
+            hand.PickupObject(this);
+        }
+        else
+        {
+            Debug.LogError("Trigger down on not-owned hand");
+        }
+    }
+
+    public void OnTriggerUp(HandController hand)
+    {
+        if (controllingHands.Contains(hand))
+        {
+            hand.ThrowObject(this);
+        }
+        else
+        {
+            Debug.LogError("Trigger up on not-owned hand!");
+        }
     }
 }
