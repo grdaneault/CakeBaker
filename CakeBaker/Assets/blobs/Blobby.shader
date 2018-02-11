@@ -9,14 +9,17 @@
 		_HeadCtrl("Head Control", Vector) = (0, .7, 0)
 		_TummyCtrl("Tummy Control", Vector) = (0, .4, 0)
 		_GroundCtrl("Ground Control", Vector) = (0, 0, 0)
+		
 
 		_TipRadius("Tip Radius", Float) = 0
 		_HeadRadius("Head Radius", Float) = .8
 		_TummyRadius("Tummy Radius", Float) = .6
 		_GroundRadius("Ground Radius", Float) = 1
+
+
 	}
 	SubShader {
-		Tags { "RenderType"="Opaque" }
+		Tags { "RenderType"="Transparent" }
 		LOD 200
 
 		CGPROGRAM
@@ -61,11 +64,19 @@
 
 			float angle = atan2(v.vertex.z, v.vertex.x);
 
-
+			//float radius = 1;
 			float radius = 1 * pow(1 - y, 3) * pow(y, 0) * _GroundRadius
 				+ 3 * pow(1 - y, 2) * pow(y, 1) * _TummyRadius
 				+ 3 * pow(1 - y, 1) * pow(y, 2) * _HeadRadius
 				+ pow(y, 3) * _TipRadius;
+/*
+			float2 radiusPt = 1 * pow(1 - y, 3) * pow(y, 0) * float2(_GroundRadius, _GroundCtrl.y)
+				+ 3 * pow(1 - y, 2) * pow(y, 1) * float2(_TummyRadius, _TummyCtrl.y)
+				+ 3 * pow(1 - y, 1) * pow(y, 2) * float2(_HeadRadius, _HeadCtrl.y)
+				+ pow(y, 3) * float2(_TipRadius, _TipCtrl.y);
+			float radius = radiusPt.x;
+
+			radius = y;*/
 
 			float4 anchor = 1 * pow(1 - y, 3) * _GroundCtrl
 				+ 3 * pow(1 - y, 2) * y * _TummyCtrl
@@ -85,8 +96,8 @@
 
 			float4 bitangent = normalize(float4(cross(normal, tangent), 1));
 
-			float c = cos(angle) * radius;
-			float d = sin(angle) * radius;
+			float c = cos(angle + 3.14) * radius;
+			float d = sin(angle + 3.14) * radius;
 
 			v.vertex = anchor
 				+ c * normal
@@ -98,6 +109,7 @@
 			o.Albedo = c.rgb;
 			o.Specular = 0.2;
 			o.Gloss = 1.0;
+			o.Alpha = .5;
 		}
 		ENDCG
 	}
