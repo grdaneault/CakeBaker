@@ -13,6 +13,7 @@ public class Door : MonoBehaviour {
     [Header("Game")]
     public bool IsOpen;
     public bool IsVisible;
+    public bool IsFlipped;
     public int RequiredSlamVelocity = 100;
     public int SlamCompleteAngleThreshold = 5;
     public int OpenDegree = 100;
@@ -23,8 +24,11 @@ public class Door : MonoBehaviour {
     public float _doorAngle;
     public bool _isOpen;
     public bool _isVisible;
+    public bool _isFlipped;
     public bool _vanishOnClose;
     public bool _firstClose;
+    public float _doorBounce;
+    public float _doorLimitMin, _doorLimitMax;
 
     public event EventHandler OnClosed = (s, a) => { };
 
@@ -60,6 +64,7 @@ public class Door : MonoBehaviour {
             Appear();
         }
 
+       
         //foreach (var body in gameObject.GetComponentsInChildren<Rigidbody>())
         //{
         //    body.Sleep();
@@ -72,6 +77,7 @@ public class Door : MonoBehaviour {
 
         UpdateIsOpen();
         UpdateIsVisible();
+        UpdateIsFlipped();
         UpdateScale();
 
        
@@ -87,38 +93,67 @@ public class Door : MonoBehaviour {
 
         if (DoorHinge.Hinge != null)
         {
+
+            _doorLimitMax = DoorHinge.Hinge.limits.max;
+            _doorLimitMin = DoorHinge.Hinge.limits.min;
+
+            DoorHinge.Flipped = IsFlipped;
+
             
 
+
+
+            var slamAngle = IsFlipped ? -180 + SlamCompleteAngleThreshold : -SlamCompleteAngleThreshold;
+            DoorHinge.Hinge.limits = new JointLimits()
+            {
+                max = IsFlipped ? -180 + MaxOpen : 0,
+                min = IsFlipped ? -180 : -MaxOpen,
+                bounciness = .4f
+            };
             if (_isOpen)
             {
-
-                if (DoorHinge.Hinge.angle > -SlamCompleteAngleThreshold && DoorHinge.Hinge.velocity > RequiredSlamVelocity)
-                {
-                    CloseDoor(); // SLAMMED!
-                    SlamEffect.Slam();
-                    Debug.Log("SLAMMED");
-                }
+                
             }
             else
             {
-                if (DoorHinge.Hinge.angle > -SlamCompleteAngleThreshold)
-                {
-                    if (_firstClose)
-                    {
-                        _firstClose = false;
-                        OnClosed(this, null);
-                    }
-                }
-                if (DoorHinge.Hinge.angle > -SlamCompleteAngleThreshold && DoorHinge.Hinge.velocity < 0)
-                {
-                    
-                    DoorHinge.Hinge.limits = new JointLimits()
-                    {
-                        min = 0,
-                        bounciness = 0
-                    };
-                }
+                //DoorHinge.Hinge.limits = new JointLimits()
+                //{
+                //    max = IsFlipped ? -180 : 0,
+                //    min = IsFlipped ? -180 : 0,
+                //    bounciness = .0f
+                //};
             }
+
+            //if (_isOpen)
+            //{
+
+            //    if (DoorHinge.Hinge.angle > -SlamCompleteAngleThreshold && DoorHinge.Hinge.velocity > RequiredSlamVelocity)
+            //    {
+            //        CloseDoor(); // SLAMMED!
+            //        SlamEffect.Slam();
+            //        Debug.Log("SLAMMED");
+            //    }
+            //}
+            //else
+            //{
+            //    if (DoorHinge.Hinge.angle > -SlamCompleteAngleThreshold)
+            //    {
+            //        if (_firstClose)
+            //        {
+            //            _firstClose = false;
+            //            OnClosed(this, null);
+            //        }
+            //    }
+            //    if (DoorHinge.Hinge.angle > -SlamCompleteAngleThreshold && DoorHinge.Hinge.velocity < 0)
+            //    {
+
+            //        DoorHinge.Hinge.limits = new JointLimits()
+            //        {
+            //            min = 0,
+            //            bounciness = 0
+            //        };
+            //    }
+            //}
             DoorHinge.Hinge.useSpring = true;
             _doorVelocity = DoorHinge.Hinge.velocity;
             _doorAngle = DoorHinge.Hinge.angle;
@@ -147,14 +182,15 @@ public class Door : MonoBehaviour {
         {
             spring = .2f,
             damper = .02f,
-            targetPosition = -OpenDegree
+            targetPosition = IsFlipped ? -180 + OpenDegree : -OpenDegree
         };
-        DoorHinge.Hinge.limits = new JointLimits()
-        {
-            min = -MaxOpen,
-            bounciness = .4f
-        };
+        
     }
+
+    //private void GetLimits()
+    //{
+
+    //}
 
     public void CloseDoor()
     {
@@ -172,7 +208,7 @@ public class Door : MonoBehaviour {
         {
             spring = .4f,
             damper = .02f,
-            targetPosition = 0
+            targetPosition = IsFlipped ? -180 : 0
         };
     }
 
@@ -236,6 +272,24 @@ public class Door : MonoBehaviour {
         IsVisible = true;
     }
 
+    public void FlipDoor()
+    {
+        if (DoorHinge != null)
+        {
+            //DoorHinge.TheHinge.transform.localRotation = Quaternion.Euler(0, 180, 0);
+            //DoorHinge.Flipped = true;
+        }
+    }
+
+    public void UnflipDoor()
+    {
+        if (DoorHinge == null)
+        {
+            //DoorHinge.TheHinge.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            //DoorHinge.Flipped = false;
+        }
+    }
+
     private void UpdateIsOpen()
     {
         if (IsOpen != _isOpen)
@@ -263,6 +317,21 @@ public class Door : MonoBehaviour {
             } else
             {
                 Vanish();
+            }
+        }
+    }
+
+    public void UpdateIsFlipped()
+    {
+        if (_isFlipped != IsFlipped)
+        {
+            _isFlipped = IsFlipped;
+            if (_isFlipped)
+            {
+                FlipDoor();
+            } else
+            {
+                UnflipDoor();
             }
         }
     }
