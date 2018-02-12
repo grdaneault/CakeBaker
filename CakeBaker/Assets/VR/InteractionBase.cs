@@ -105,7 +105,12 @@ public class InteractionBase : MonoBehaviour {
     {
         if (controllingHands.Contains(hand))
         {
-            hand.ThrowObject(this);
+            // Only throw if we are currently held by this hand 
+            // (trigger on one cake, steal with other hand, move to new cake, release trigger -> can't throw)
+            if (hand.IsHolding(this))
+            {
+                hand.ThrowObject(this);
+            }
         }
         else
         {

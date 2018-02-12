@@ -19,12 +19,13 @@ public class HandController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (hovering.Count == 0)
+        if (hovering.Count == 0 && holding == null)
         {
             return;
         }
 
-        var interactionTarget = GetClosestCollider();
+
+        var interactionTarget = holding != null ? holding : GetClosestCollider();
 
         if (Controller.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
         {
@@ -75,6 +76,10 @@ public class HandController : MonoBehaviour {
 
     public void PickupObject(InteractionBase obj)
     {
+        if (holding != null)
+        {
+            Debug.LogAssertion("Cannot pull trigger while already holding an object called " + holding.name, obj);
+        }
         pickupJoint.connectedBody = obj.GetComponent<Rigidbody>();
         holding = obj;
         Debug.Log("Picked up object", obj);
@@ -84,7 +89,7 @@ public class HandController : MonoBehaviour {
     {
         if (obj != holding)
         {
-            Debug.LogAssertion("Cannot throw a non-held object");
+            Debug.LogAssertion("Cannot throw a non-held object", obj);
             return;
         }
         pickupJoint.connectedBody = null;
