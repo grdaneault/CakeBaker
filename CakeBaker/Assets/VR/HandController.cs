@@ -7,7 +7,7 @@ public class HandController : MonoBehaviour {
     public SteamVR_Controller.Device Controller { get { return SteamVR_Controller.Input((int)trackedObject.index); } }
     private SteamVR_TrackedObject trackedObject;
     private Joint pickupJoint;
-    private InteractionBase hovering;
+    private List<InteractionBase> hovering = new List<InteractionBase>();
     private InteractionBase holding;
 
     // Use this for initialization
@@ -19,46 +19,58 @@ public class HandController : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (hovering == null)
+        if (hovering.Count == 0)
         {
             return;
         }
 
+        var interactionTarget = GetClosestCollider();
+
         if (Controller.GetPressDown(SteamVR_Controller.ButtonMask.Trigger))
         {
-            hovering.OnTriggerDown(this);
+            interactionTarget.OnTriggerDown(this);
         }
 
         if (Controller.GetPressUp(SteamVR_Controller.ButtonMask.Trigger))
         {
-            hovering.OnTriggerUp(this);
+            interactionTarget.OnTriggerUp(this);
         }
+    }
+
+    InteractionBase GetClosestCollider()
+    {
+        InteractionBase closestCollider = null;
+        foreach (var hit  in hovering)
+        {
+            if (closestCollider == null)
+            {
+                closestCollider = hit;
+            }
+            //compares distances
+            if (Vector3.Distance(transform.position, hit.transform.position) <= Vector3.Distance(transform.position, closestCollider.transform.position))
+            {
+                closestCollider = hit;
+            }
+        }
+        return closestCollider;
     }
 
     private void OnTriggerEnter(Collider other)
     {
         var interactionBase = other.GetComponent<InteractionBase>();
-        if (interactionBase == null)
-        {
-            return;
-        }
-
-        if (hovering != null)
-        {
-            hovering.HoverExit(this);
-        }
+        if (interactionBase == null) { return; }
 
         interactionBase.HoverEnter(this);
-        hovering = interactionBase;
+        hovering.Add(interactionBase);
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.GetComponent<InteractionBase>() == hovering && hovering != null)
-        {
-            hovering.HoverExit(this);
-            hovering = null;
-        } 
+        var interactionBase = other.GetComponent<InteractionBase>();
+        if (interactionBase == null) { return; }
+
+        hovering.Remove(interactionBase);
+        interactionBase.HoverExit(this);
     }
 
     public void PickupObject(InteractionBase obj)
