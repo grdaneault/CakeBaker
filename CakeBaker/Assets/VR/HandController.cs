@@ -81,5 +81,11 @@ public class HandController : MonoBehaviour {
         rb.velocity = origin.TransformVector(Controller.velocity);
         rb.angularVelocity = origin.TransformVector(Controller.angularVelocity);
         Debug.Log("Threw with velocity " + rb.velocity, obj);
+        holding = null;
+    }
+
+    public bool IsHolding(InteractionBase obj)
+    {
+        return obj == holding;
     }
 }

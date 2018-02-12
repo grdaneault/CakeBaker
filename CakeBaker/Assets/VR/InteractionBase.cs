@@ -88,13 +88,16 @@ public class InteractionBase : MonoBehaviour {
 
     public void OnTriggerDown(HandController hand)
     {
-        if (controllingHands.Contains(hand))
+        foreach (var ch in controllingHands)
         {
-            hand.PickupObject(this);
-        }
-        else
-        {
-            Debug.LogError("Trigger down on not-owned hand");
+            if (ch != hand && ch.IsHolding(this))
+            {
+                ch.ThrowObject(this);
+            }
+            else if (ch == hand && !hand.IsHolding(this))
+            {
+                hand.PickupObject(this);
+            }
         }
     }
 
