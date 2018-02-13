@@ -7,6 +7,7 @@ public class PortalTarget : MonoBehaviour {
     public Camera PortalCamera;
     public Material PortalMaterial;
     public MeshRenderer RenderPlane;
+    public Shader CutoutShader;
 
     public Transform PlayerCamera;
     public Transform Portal;
@@ -24,7 +25,8 @@ public class PortalTarget : MonoBehaviour {
         PortalCamera.targetTexture = new RenderTexture(Screen.width, Screen.height, 24);
 
         cloned = new Material(PortalMaterial);
-        cloned.shader = PortalMaterial.shader;
+        
+        cloned.shader = CutoutShader;
         cloned.mainTexture = PortalCamera.targetTexture;
 
         RenderPlane.material = cloned;
