@@ -10,30 +10,25 @@ public class OvenController : MonoBehaviour {
 
     public LeverPull CakeLever;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         cake = Resources.Load<GameObject>("cake/Cake");
-        Debug.Log("Found cake", cake);
     }
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown(KeyCode.C))
+		if (Input.GetKeyDown(KeyCode.C) || (CakeLever != null && CakeLever.JustTriggered))
         {
-            Debug.LogWarning("Spawning cake");
-            var instance = Instantiate(cake, this.transform);
-
-            var forceDirection = transform.TransformDirection(cakeForce.normalized);
-            instance.GetComponentInChildren<Rigidbody>().AddForce(cakeForce.magnitude * forceDirection);
+            SpawnCake();
         }
+    }
 
-        if (CakeLever != null && CakeLever.JustTriggered)
-        {
-            Debug.LogWarning("Spawning cake");
-            var instance = Instantiate(cake, this.transform);
+    public void SpawnCake()
+    {
+        Debug.LogWarning("Spawning cake");
+        var instance = Instantiate(cake, this.transform);
 
-            var forceDirection = transform.TransformDirection(cakeForce.normalized);
-            instance.GetComponentInChildren<Rigidbody>().AddForce(cakeForce.magnitude * forceDirection);
-        }
-	}
+        var forceDirection = transform.TransformDirection(cakeForce.normalized);
+        instance.GetComponentInChildren<Rigidbody>().AddForce(cakeForce.magnitude * forceDirection);
+    }
 }

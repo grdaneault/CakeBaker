@@ -6,6 +6,7 @@ public class CakeFroster : MonoBehaviour
 {
 
     private GameObject decoratedCake;
+
     void Start()
     {
         decoratedCake = Resources.Load<GameObject>("cake/DecoratedCake2");

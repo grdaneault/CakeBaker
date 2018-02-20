@@ -14,16 +14,15 @@ public class Froster9000Controller : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyDown(KeyCode.F))
+        if (Input.GetKeyDown(KeyCode.F) || (FrostingLever != null && FrostingLever.JustTriggered))
         {
-            Debug.LogWarning("Spawning frosting");
-            var instance = Instantiate(frosterBomb, this.transform);
+            SpawnFrostingBomb();
+        }
+    }
 
-        }
-        if (FrostingLever != null && FrostingLever.JustTriggered)
-        {
-            Debug.LogWarning("Spawning frosting");
-            var instance = Instantiate(frosterBomb, this.transform);
-        }
+    public void SpawnFrostingBomb()
+    {
+        Debug.LogWarning("Spawning frosting");
+        var instance = Instantiate(frosterBomb, this.transform);
     }
 }
