@@ -8,6 +8,12 @@ public class DoorHinge : MonoBehaviour {
 
     public HingeJoint Hinge;
     public GameObject TheHinge;
+    public GameObject OtherSide;
+
+    public bool Flipped;
+    private bool _wasFlipped;
+
+    public int FlippedSign { get { return Flipped ? 1 : 1; } }
 
     //private GameObject _hingeOther;
 
@@ -23,6 +29,22 @@ public class DoorHinge : MonoBehaviour {
         if (Hinge != null)
         {
             Hinge.anchor = new Vector3(-.3f, 0, 0);
+
+            if (Flipped != _wasFlipped)
+            {
+                if (Flipped)
+                {
+                    TheHinge.transform.localPosition = new Vector3(.3f, .5f, 0);
+                    OtherSide.transform.localPosition = new Vector3(-.3f, .5f, 0);
+                }
+                else
+                {
+                    TheHinge.transform.localPosition = new Vector3(-.3f, .5f, 0);
+                    OtherSide.transform.localPosition = new Vector3(.3f, .5f, 0);
+                }
+
+                _wasFlipped = Flipped;
+            }
 
         }
     }
@@ -55,8 +77,8 @@ public class DoorHinge : MonoBehaviour {
             otherRigidBody.constraints = RigidbodyConstraints.FreezeAll;
 
             Hinge = gameObject.AddComponent<HingeJoint>();
-            Hinge.anchor = new Vector3(-.3f, 0, 0);
-            Hinge.axis = new Vector3(0, 1, 0);
+            Hinge.anchor = new Vector3(-.3f * FlippedSign, 0, 0);
+            Hinge.axis = new Vector3(0, -1, 0);
             Hinge.autoConfigureConnectedAnchor = false;
             Hinge.connectedAnchor = Vector3.zero;
             Hinge.useLimits = true;
