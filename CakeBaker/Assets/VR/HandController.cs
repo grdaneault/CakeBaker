@@ -41,8 +41,15 @@ public class HandController : MonoBehaviour {
     InteractionBase GetClosestCollider()
     {
         InteractionBase closestCollider = null;
+        var toRemove = new List<InteractionBase>();
         foreach (var hit  in hovering)
         {
+            if (!hit.isActiveAndEnabled)
+            {
+                toRemove.Add(hit);
+                continue;
+            }
+
             if (closestCollider == null)
             {
                 closestCollider = hit;
@@ -53,6 +60,12 @@ public class HandController : MonoBehaviour {
                 closestCollider = hit;
             }
         }
+
+        foreach (var getRidOfMe in toRemove)
+        {
+            hovering.Remove(getRidOfMe);
+        }
+
         return closestCollider;
     }
 

@@ -42,6 +42,7 @@ GameObject:
   - component: {fileID: 65013351431015304}
   - component: {fileID: 114847316408423142}
   - component: {fileID: 114627229459336980}
+  - component: {fileID: 114082687392208712}
   m_Layer: 0
   m_Name: DecoratedCake2
   m_TagString: Untagged
@@ -185,6 +186,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 2, z: 1.0000001}
   m_Center: {x: 0.00000005960464, y: 0, z: -0.00000008940696}
+--- !u!114 &114082687392208712
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1906974488597740}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bd955e93e39fe040947cbb17432584a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  HighlightMaterial: {fileID: 2100000, guid: 7b939e5e799d98a469f594828ebab52e, type: 2}
 --- !u!114 &114627229459336980
 MonoBehaviour:
   m_ObjectHideFlags: 1
